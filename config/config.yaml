@@ -1,0 +1,99 @@
+app:
+  name: "NVIDIA News Crawler"
+  version: "1.0.0"
+  debug: false
+
+crawlers:
+  nvidia_official:
+    enabled: true
+    name: "NVIDIA Official"
+    url: "https://www.nvidia.com/en-us/news/"
+    schedule: "0 */6 * * *"
+    timeout: 30
+    retry_times: 3
+    description: "Official NVIDIA news and product announcements"
+    selectors:
+      article_container: "article"
+      title: "h2"
+      url: "a"
+      date: "span.date"
+  
+  gtc:
+    enabled: true
+    name: "NVIDIA GTC"
+    url: "https://www.nvidia.com/gtc/"
+    schedule: "0 0 * * 0"
+    timeout: 30
+    retry_times: 3
+    description: "NVIDIA GPU Technology Conference content"
+    selectors:
+      article_container: ".gtc-session"
+      title: ".session-title"
+      url: ".session-link"
+      date: ".session-date"
+  
+  investor_reports:
+    enabled: true
+    name: "Investor Relations"
+    url: "https://investor.nvidia.com/"
+    schedule: "0 0 1 * *"
+    timeout: 60
+    retry_times: 3
+    description: "Financial reports and investor relations"
+    selectors:
+      report_container: ".report-item"
+      title: ".report-title"
+      url: ".report-link"
+      date: ".report-date"
+  
+  google_news:
+    enabled: true
+    name: "Google News"
+    query: "NVIDIA"
+    schedule: "0 */2 * * *"
+    timeout: 30
+    retry_times: 3
+    description: "NVIDIA related news from Google News"
+    max_results: 50
+  
+  twitter:
+    enabled: false
+    name: "Twitter/X"
+    handle: "nvidia"
+    schedule: "0 * * * *"
+    timeout: 30
+    retry_times: 3
+    description: "Official NVIDIA Twitter/X posts"
+    max_tweets: 100
+
+database:
+  type: "postgresql"
+  host: "localhost"
+  port: 5432
+  name: "nvidia_crawler"
+  user: "postgres"
+  password: "password"
+  pool_size: 10
+  echo_sql: false
+
+storage:
+  enable_archive: true
+  archive_path: "./output/"
+  output_format: "json"
+  compression: "gzip"
+
+logging:
+  level: "INFO"
+  file: "logs/crawler.log"
+  max_size: "100MB"
+  backup_count: 5
+
+performance:
+  max_workers: 3
+  timeout: 30
+  retry_delay: 5
+  backoff_factor: 2
+
+ai:
+  provider: "deepseek"
+  enable_analysis: true

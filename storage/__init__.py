@@ -1,5 +1,5 @@
 """
-Updated storage module with file export support
+Storage module with file export support
 """
 from .database import Database
 from .models import Article, FinancialReport

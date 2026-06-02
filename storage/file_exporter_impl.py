@@ -59,7 +59,6 @@ class FileExporter:
             
             filepath = self.output_dir / filename
             
-            # Convert datetime objects to strings
             serializable_data = []
             for item in data:
                 serializable_item = {}
@@ -101,7 +100,6 @@ class FileExporter:
             
             filepath = self.output_dir / filename
             
-            # Get all unique keys
             fieldnames = set()
             for item in data:
                 fieldnames.update(item.keys())
@@ -112,7 +110,6 @@ class FileExporter:
                 writer.writeheader()
                 
                 for item in data:
-                    # Convert complex types to strings
                     row = {}
                     for key, value in item.items():
                         if isinstance(value, (list, dict)):
@@ -155,7 +152,6 @@ class FileExporter:
             
             filepath = self.output_dir / filename
             
-            # Convert to DataFrame
             df_data = []
             for item in data:
                 row = {}
@@ -170,11 +166,9 @@ class FileExporter:
             
             df = pd.DataFrame(df_data)
             
-            # Export to Excel with formatting
             with pd.ExcelWriter(filepath, engine='openpyxl') as writer:
                 df.to_excel(writer, index=False, sheet_name='Articles')
                 
-                # Auto-adjust column widths
                 worksheet = writer.sheets['Articles']
                 for column in worksheet.columns:
                     max_length = 0
@@ -217,13 +211,11 @@ class FileExporter:
             filepath = self.output_dir / filename
             
             with open(filepath, 'w', encoding='utf-8') as f:
-                # Write header
                 f.write("# NVIDIA News and Information\n\n")
                 f.write(f"Export Date: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n")
                 f.write(f"Total Items: {len(data)}\n\n")
                 f.write("---\n\n")
                 
-                # Write each item
                 for idx, item in enumerate(data, 1):
                     f.write(f"## {idx}. {item.get('title', 'Untitled')}\n\n")
                     
@@ -250,7 +242,6 @@ class FileExporter:
                         f.write(f"**Summary:**\n\n{item['summary']}\n\n")
                     
                     if 'content' in item and item['content']:
-                        # Truncate long content
                         content = item['content']
                         if len(content) > 500:
                             content = content[:500] + "...\n\n[Content truncated]"
@@ -283,7 +274,6 @@ class FileExporter:
             True if successful, False otherwise
         """
         try:
-            # Group by source
             by_source = {}
             for item in data:
                 source = item.get('source', 'unknown')
@@ -291,7 +281,6 @@ class FileExporter:
                     by_source[source] = []
                 by_source[source].append(item)
             
-            # Export each source
             for source, items in by_source.items():
                 filename = f"{source}_{self._get_timestamp_filename('data', format)}"
                 
@@ -327,7 +316,6 @@ class FileExporter:
         try:
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             
-            # Export to each format
             formats = [
                 ("json", f"articles_{timestamp}.json"),
                 ("csv", f"articles_{timestamp}.csv"),
@@ -342,7 +330,6 @@ class FileExporter:
                 elif format_type == "markdown":
                     self.export_markdown(data, filename)
             
-            # Try to export Excel if pandas is available
             if pd is not None:
                 self.export_excel(data, f"articles_{timestamp}.xlsx")
             
@@ -352,15 +339,6 @@ class FileExporter:
         except Exception as e:
             self.logger.error(f"Error exporting to all formats: {str(e)}")
             return False
-    
-    def get_output_dir(self) -> str:
-        """
-        Get output directory path
-        
-        Returns:
-            Output directory path
-        """
-        return str(self.output_dir)
     
     def list_exports(self) -> List[str]:
         """
